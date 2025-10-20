@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍽️ Food Delivery Admin - 美味しいご飯管理システム</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 簡易版CSS - フルバージョンは admin/assets/css/admin.css を参照 */
+        :root {
+            --primary-color: #4F46E5;
+            --primary-dark: #3730A3;
+            --primary-light: #818CF8;
+            --secondary-color: #10B981;
+            --danger-color: #EF4444;
+            --warning-color: #F59E0B;
+            --success-color: #10B981;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --bg-sidebar: #1F2937;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --text-white: #FFFFFF;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --transition-fast: 0.15s ease-in-out;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+            padding: var(--spacing-xl);
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .feature-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all var(--transition-fast);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .feature-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--transition-fast);
+        }
+
+        .feature-link:hover {
+            color: var(--primary-dark);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .launch-section {
+            text-align: center;
+            padding: var(--spacing-xl);
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .launch-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-xl);
+            background: var(--primary-color);
+            color: var(--text-white);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all var(--transition-fast);
+            margin: var(--spacing-md);
+        }
+
+        .launch-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--success-color);
+            color: var(--text-white);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .status-indicator i {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            justify-content: center;
+            margin-top: var(--spacing-lg);
+        }
+
+        .tech-badge {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--gray-100);
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍽️ Food Delivery Admin</h1>
+            <p>美味しいご飯を気軽に持ち帰り・デリバリーできるプラットフォームの管理システム</p>
+            <div class="status-indicator">
+                <i class="fas fa-circle"></i>
+                <span>システム稼働中</span>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">¥12,456,789</div>
+                <div class="stat-label">今日の売上</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">2,456</div>
+                <div class="stat-label">総注文数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">156</div>
+                <div class="stat-label">アクティブレストラン</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">89</div>
+                <div class="stat-label">配送員</div>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>ダッシュボード</h3>
+                <p>リアルタイムの売上状況、注文数、レストランパフォーマンスを一目で確認できます。</p>
+                <a href="dashboard.html" class="feature-link">
+                    <span>ダッシュボードを開く</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-yen-sign"></i>
+                </div>
+                <h3>売上管理</h3>
+                <p>詳細な売上分析、時間帯別データ、レストラン別パフォーマンスを管理します。</p>
+                <a href="sales.html" class="feature-link">
+                    <span>売上管理を開く</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h3>レストラン管理</h3>
+                <p>レストランの登録、メニュー管理、パフォーマンス監視を行います。</p>
+                <a href="#" class="feature-link">
+                    <span>レストラン管理を開く</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3>注文管理</h3>
+                <p>リアルタイムの注文追跡、配送状況の監視、顧客サポートを行います。</p>
+                <a href="#" class="feature-link">
+                    <span>注文管理を開く</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-motorcycle"></i>
+                </div>
+                <h3>配送管理</h3>
+                <p>配送員の管理、配送エリアの設定、配送パフォーマンスの監視を行います。</p>
+                <a href="#" class="feature-link">
+                    <span>配送管理を開く</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <h3>システム設定</h3>
+                <p>プラットフォームの設定、ユーザー管理、セキュリティ設定を行います。</p>
+                <a href="#" class="feature-link">
+                    <span>設定を開く</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="launch-section">
+            <h2>🚀 システム起動完了</h2>
+            <p>フードデリバリー管理システムが正常に起動しました。以下のリンクから各機能にアクセスできます。</p>
+            
+            <div style="margin: var(--spacing-lg) 0;">
+                <a href="dashboard.html" class="launch-btn">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>ダッシュボードを開く</span>
+                </a>
+                <a href="sales.html" class="launch-btn">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>売上管理を開く</span>
+                </a>
+            </div>
+
+            <div class="tech-stack">
+                <span class="tech-badge">PHP 8.1+</span>
+                <span class="tech-badge">Slim Framework</span>
+                <span class="tech-badge">MySQL</span>
+                <span class="tech-badge">Redis</span>
+                <span class="tech-badge">Memcached</span>
+                <span class="tech-badge">gRPC</span>
+                <span class="tech-badge">Docker</span>
+                <span class="tech-badge">Chart.js</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 簡易版JavaScript - フルバージョンは admin/assets/js/admin.js を参照
+        document.addEventListener('DOMContentLoaded', function() {
+            // アニメーション効果
+            const cards = document.querySelectorAll('.feature-card, .stat-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // リアルタイムデータ更新のシミュレーション
+            setInterval(() => {
+                const statValues = document.querySelectorAll('.stat-value');
+                statValues.forEach(stat => {
+                    if (stat.textContent.includes('¥')) {
+                        // 売上データの更新
+                        const currentValue = parseInt(stat.textContent.replace(/[¥,]/g, ''));
+                        const newValue = currentValue + Math.floor(Math.random() * 10000);
+                        stat.textContent = '¥' + newValue.toLocaleString();
+                    } else if (stat.textContent.includes(',')) {
+                        // 注文数の更新
+                        const currentValue = parseInt(stat.textContent.replace(/,/g, ''));
+                        const newValue = currentValue + Math.floor(Math.random() * 5);
+                        stat.textContent = newValue.toLocaleString();
+                    }
+                });
+            }, 30000); // 30秒ごとに更新
+
+            // ホバー効果
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-4px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: food-delivery-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: food_delivery
+      MYSQL_USER: food_user
+      MYSQL_PASSWORD: food_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - food-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: food-delivery-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - food-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Memcached
+  memcached:
+    image: memcached:1.6-alpine
+    container_name: food-delivery-memcached
+    ports:
+      - "11211:11211"
+    networks:
+      - food-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "11211"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PHP-FPM with Slim Framework
+  php-fpm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.php
+    container_name: food-delivery-php
+    volumes:
+      - ./api:/var/www/html
+      - ./logs:/var/www/html/logs
+    networks:
+      - food-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      memcached:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=food_user
+      - DB_PASSWORD=food_password
+      - DB_NAME=food_delivery
+      - REDIS_HOST=redis
+      - MEMCACHED_HOST=memcached
+
+  # Nginx Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: food-delivery-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./api/public:/var/www/html
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/ssl:/etc/nginx/ssl
+    networks:
+      - food-network
+    depends_on:
+      - php-fpm
+    restart: unless-stopped
+
+  # Datadog Agent
+  datadog-agent:
+    image: datadog/agent:latest
+    container_name: food-delivery-datadog
+    environment:
+      DD_API_KEY: ${DATADOG_API_KEY:-}
+      DD_SITE: datadoghq.com
+      DD_APM_ENABLED: true
+      DD_LOGS_ENABLED: true
+      DD_PROCESS_AGENT_ENABLED: true
+      DD_CONTAINER_EXCLUDE: "name:datadog-agent"
+      DD_CONTAINER_EXCLUDE_METRICS: "name:datadog-agent"
+      DD_CONTAINER_EXCLUDE_LOGS: "name:datadog-agent"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - ./logs:/var/log/food-delivery:ro
+    networks:
+      - food-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  food-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
