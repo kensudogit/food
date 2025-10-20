@@ -12,7 +12,11 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libmemcached-dev \
     zlib1g-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    build-essential \
+    autoconf \
+    libtool \
+    pkg-config \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip sockets
 
 # Install Redis extension
 RUN pecl install redis && docker-php-ext-enable redis
@@ -23,11 +27,9 @@ RUN pecl install memcached && docker-php-ext-enable memcached
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install gRPC extension
-RUN pecl install grpc && docker-php-ext-enable grpc
-
-# Install Protobuf extension
-RUN pecl install protobuf && docker-php-ext-enable protobuf
+# Install gRPC and Protobuf extensions (commented out for faster build)
+# RUN pecl install grpc-1.54.0 && docker-php-ext-enable grpc
+# RUN pecl install protobuf-3.24.0 && docker-php-ext-enable protobuf
 
 # Set working directory
 WORKDIR /var/www/html

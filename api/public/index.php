@@ -17,6 +17,7 @@ use FoodDelivery\Routes\OrderRoutes;
 use FoodDelivery\Routes\UserRoutes;
 use FoodDelivery\Routes\DeliveryRoutes;
 use FoodDelivery\Routes\PaymentRoutes;
+use FoodDelivery\Routes\DroneRoutes;
 use FoodDelivery\Config\DatabaseConfig;
 use FoodDelivery\Config\RedisConfig;
 use FoodDelivery\Config\MemcachedConfig;
@@ -74,6 +75,7 @@ $app->group('/orders', OrderRoutes::class);
 $app->group('/users', UserRoutes::class);
 $app->group('/delivery', DeliveryRoutes::class);
 $app->group('/payments', PaymentRoutes::class);
+$app->group('/drones', DroneRoutes::class);
 
 // Health check endpoint
 $app->get('/health', function (Request $request, Response $response) {
